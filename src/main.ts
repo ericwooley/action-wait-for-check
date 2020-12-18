@@ -5,7 +5,7 @@ import {poll} from './poll'
 async function run(): Promise<void> {
   try {
     const token = core.getInput('token', {required: true})
-    const result = await poll({
+    await poll({
       client: getOctokit(token),
       log: msg => core.info(msg),
       currentRunId: context.runId,
@@ -17,8 +17,6 @@ async function run(): Promise<void> {
       timeoutSeconds: parseInt(core.getInput('timeoutSeconds') || '600'),
       intervalSeconds: parseInt(core.getInput('intervalSeconds') || '10')
     })
-
-    core.setOutput('conclusion', result)
   } catch (error) {
     core.setFailed(error.message)
   }

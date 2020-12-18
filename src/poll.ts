@@ -20,7 +20,7 @@ export interface Options {
   branch: string
 }
 
-export const poll = async (options: Options): Promise<string> => {
+export const poll = async (options: Options): Promise<void> => {
   const {
     client,
     log,
@@ -55,23 +55,20 @@ export const poll = async (options: Options): Promise<string> => {
       .filter(run => run.created_at < myRun?.created_at)
 
     log(
-      `Retrieved ${JSON.stringify(
-        runsInProgress,
-        null,
-        2
-      )} check runs named ${workflowFile}`
+      `Found: ${runsInProgress.length} runs in progress for ${workflowFile} for branch ${branch}`
     )
+    log(runsInProgress.map(r => `${r.id} => ${r.url}`).join('\n'))
 
     const stillRunning = !!runsInProgress.length
     if (stillRunning) {
       runsInProgress.forEach(run => {
         log(
-          `Found an action which is still running, id: '${run.id}' conclusion: ${run.status}`
+          `Found an action which is still running, id: '${run.id}' status: ${run.status}`
         )
       })
     } else {
       log('No actions found to be running')
-      return 'done'
+      return
     }
 
     await wait(intervalSeconds * 1000)
@@ -79,8 +76,6 @@ export const poll = async (options: Options): Promise<string> => {
     now = new Date().getTime()
   }
 
-  log(
-    `No completed checks after ${timeoutSeconds} seconds, exiting with conclusion 'timed_out'`
-  )
-  return 'timed_out'
+  log(`No completed checks after ${timeoutSeconds} seconds, exiting`)
+  throw new Error('Timed out')
 }

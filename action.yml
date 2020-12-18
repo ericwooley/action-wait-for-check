@@ -12,11 +12,12 @@ inputs:
     description: "The workflow file with the flow you want to check."
     required: true
   branch:
-    description: "The Git ref of the branch you want to poll for a passing check."
+    description: "The Git ref of the branch you want to poll for a running builds."
+    required: true
   repo:
-    description: "The name of the GitHub repository you want to poll for a passing check."
+    description: "The name of the GitHub repository you want to poll for a running builds."
   owner:
-    description: "The owner of the GitHub repository you want to poll for a passing check."
+    description: "The owner of the GitHub repository you want to poll for a running builds."
   timeoutSeconds:
     description: "The number of seconds to wait for the check to complete."
   intervalSeconds:

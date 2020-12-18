@@ -678,9 +678,13 @@ const poll = (options) => __awaiter(void 0, void 0, void 0, function* () {
             workflow_id: workflowFile,
             branch
         });
+        const myRun = result.data.workflow_runs.find(run => run.id === currentRunId);
+        if (!myRun)
+            throw new Error('Could not find current run');
         const runsInProgress = result.data.workflow_runs
             .filter(run => run.status !== 'completed')
-            .filter(run => run.id !== currentRunId);
+            .filter(run => run.id !== currentRunId)
+            .filter(run => run.created_at < (myRun === null || myRun === void 0 ? void 0 : myRun.created_at));
         log(`Retrieved ${JSON.stringify(runsInProgress, null, 2)} check runs named ${workflowFile}`);
         const stillRunning = !!runsInProgress.length;
         if (stillRunning) {

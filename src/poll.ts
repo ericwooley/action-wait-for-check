@@ -47,9 +47,12 @@ export const poll = async (options: Options): Promise<string> => {
       workflow_id: workflowFile,
       branch
     })
+    const myRun = result.data.workflow_runs.find(run => run.id === currentRunId)
+    if (!myRun) throw new Error('Could not find current run')
     const runsInProgress = result.data.workflow_runs
       .filter(run => run.status !== 'completed')
       .filter(run => run.id !== currentRunId)
+      .filter(run => run.created_at < myRun?.created_at)
 
     log(
       `Retrieved ${JSON.stringify(

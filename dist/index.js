@@ -628,10 +628,11 @@ function run() {
             const result = yield poll_1.poll({
                 client: github_1.getOctokit(token),
                 log: msg => core.info(msg),
-                checkName: core.getInput('checkName', { required: true }),
+                currentRunId: github_1.context.runId,
+                workflowFile: core.getInput('workflowFile', { required: true }),
                 owner: core.getInput('owner') || github_1.context.repo.owner,
                 repo: core.getInput('repo') || github_1.context.repo.repo,
-                branch: core.getInput('branch'),
+                branch: core.getInput('branch', { required: true }),
                 timeoutSeconds: parseInt(core.getInput('timeoutSeconds') || '600'),
                 intervalSeconds: parseInt(core.getInput('intervalSeconds') || '10')
             });
@@ -665,19 +666,22 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.poll = void 0;
 const wait_1 = __webpack_require__(494);
 const poll = (options) => __awaiter(void 0, void 0, void 0, function* () {
-    const { client, log, checkName, timeoutSeconds, intervalSeconds, owner, repo, branch } = options;
+    const { client, log, workflowFile, currentRunId, timeoutSeconds, intervalSeconds, owner, repo, branch } = options;
+    log(`Current Run Id: ${currentRunId}`);
     let now = new Date().getTime();
     const deadline = now + timeoutSeconds * 1000;
     while (now <= deadline) {
-        log(`Retrieving check runs named ${checkName} on ${owner}/${repo}@${branch}...`);
+        log(`Retrieving check runs for ${workflowFile} on ${owner}/${repo}@${branch}...`);
         const result = yield client.actions.listWorkflowRuns({
             owner,
             repo,
-            workflow_id: checkName,
+            workflow_id: workflowFile,
             branch
         });
-        const runsInProgress = result.data.workflow_runs.filter(run => run.status !== 'completed');
-        log(`Retrieved ${result.data.workflow_runs} check runs named ${checkName}`);
+        const runsInProgress = result.data.workflow_runs
+            .filter(run => run.status !== 'completed')
+            .filter(run => run.id !== currentRunId);
+        log(`Retrieved ${JSON.stringify(result.data.workflow_runs, null, 2)} check runs named ${workflowFile}`);
         const stillRunning = !!runsInProgress.length;
         if (stillRunning) {
             runsInProgress.forEach(run => {

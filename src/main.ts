@@ -5,11 +5,10 @@ import {poll} from './poll'
 async function run(): Promise<void> {
   try {
     const token = core.getInput('token', {required: true})
-
     const result = await poll({
       client: getOctokit(token),
       log: msg => core.info(msg),
-
+      currentRunId: context.runId,
       workflowFile: core.getInput('workflowFile', {required: true}),
       owner: core.getInput('owner') || context.repo.owner,
       repo: core.getInput('repo') || context.repo.repo,

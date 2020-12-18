@@ -14,6 +14,7 @@ export interface Options {
   workflowFile: string
   timeoutSeconds: number
   intervalSeconds: number
+  currentRunId: number
   owner: string
   repo: string
   branch: string
@@ -24,6 +25,7 @@ export const poll = async (options: Options): Promise<string> => {
     client,
     log,
     workflowFile,
+    currentRunId,
     timeoutSeconds,
     intervalSeconds,
     owner,
@@ -31,12 +33,13 @@ export const poll = async (options: Options): Promise<string> => {
     branch
   } = options
 
+  log(`Current Run Id: ${currentRunId}`)
   let now = new Date().getTime()
   const deadline = now + timeoutSeconds * 1000
 
   while (now <= deadline) {
     log(
-      `Retrieving check runs named ${worflowFile} on ${owner}/${repo}@${branch}...`
+      `Retrieving check runs for ${workflowFile} on ${owner}/${repo}@${branch}...`
     )
     const result = await client.actions.listWorkflowRuns({
       owner,
@@ -44,12 +47,16 @@ export const poll = async (options: Options): Promise<string> => {
       workflow_id: workflowFile,
       branch
     })
-    const runsInProgress = result.data.workflow_runs.filter(
-      run => run.status !== 'completed'
-    )
+    const runsInProgress = result.data.workflow_runs
+      .filter(run => run.status !== 'completed')
+      .filter(run => run.id !== currentRunId)
 
     log(
-      `Retrieved ${result.data.workflow_runs} check runs named ${workflowFile}`
+      `Retrieved ${JSON.stringify(
+        result.data.workflow_runs,
+        null,
+        2
+      )} check runs named ${workflowFile}`
     )
 
     const stillRunning = !!runsInProgress.length

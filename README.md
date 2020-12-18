@@ -1,6 +1,6 @@
 # GitHub Action: One action at a time
 
-A GitHub Action that allows you to wait for another GitHub check to complete. This is useful if you want to run one Workflow after another one finishes.
+A GitHub Action that allows you to wait for another GitHub action to complete. This is useful if you want to run one Workflow after another one finishes.
 
 ## Example Usage
 

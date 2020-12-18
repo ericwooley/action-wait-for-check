@@ -1,26 +1,26 @@
-name: 'Wait For Check'
-description: 'Wait for another GitHub check to complete'
-author: 'Fountainhead Technologies Ltd.'
+name: "Wait For Check"
+description: "Wait for another GitHub check to complete"
+author: "Fountainhead Technologies Ltd."
 branding:
-  icon: 'check-circle'
-  color: 'green'
+  icon: "check-circle"
+  color: "green"
 inputs:
   token:
-    description: 'The GitHub token to use for making API requests.'
+    description: "The GitHub token to use for making API requests."
     required: true
   checkName:
-    description: 'The name of the GitHub check to wait for. For example, `build` or `deploy`.'
+    description: "The name of the GitHub check to wait for. For example, `build` or `deploy`."
     required: true
-  ref:
-    description: 'The Git ref of the commit you want to poll for a passing check.'
+  branch:
+    description: "The Git ref of the branch you want to poll for a passing check."
   repo:
-    description: 'The name of the GitHub repository you want to poll for a passing check.'
+    description: "The name of the GitHub repository you want to poll for a passing check."
   owner:
-    description: 'The owner of the GitHub repository you want to poll for a passing check.'
+    description: "The owner of the GitHub repository you want to poll for a passing check."
   timeoutSeconds:
-    description: 'The number of seconds to wait for the check to complete.'
+    description: "The number of seconds to wait for the check to complete."
   intervalSeconds:
-    description: 'The number of seconds to wait before each poll of the GitHub API.'
+    description: "The number of seconds to wait before each poll of the GitHub API."
 runs:
-  using: 'node12'
-  main: 'dist/index.js'
+  using: "node12"
+  main: "dist/index.js"

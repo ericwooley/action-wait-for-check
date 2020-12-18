@@ -11,7 +11,7 @@ A GitHub Action that allows you to wait for another GitHub check to complete. Th
         run: echo ::set-output name=branch_name::${GITHUB_REF#refs/*/}
       # Wait for previous action to complete.
       - name: Wait for previous deploys to finish
-        uses: ericwooley/one-action-at-a-time@master
+        uses: ericwooley/one-action-at-a-time@v1.0.0
         id: wait-for-build
         with:
           token: ${{ secrets.GITHUB_TOKEN }}

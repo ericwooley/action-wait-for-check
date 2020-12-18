@@ -625,7 +625,7 @@ function run() {
     return __awaiter(this, void 0, void 0, function* () {
         try {
             const token = core.getInput('token', { required: true });
-            const result = yield poll_1.poll({
+            yield poll_1.poll({
                 client: github_1.getOctokit(token),
                 log: msg => core.info(msg),
                 currentRunId: github_1.context.runId,
@@ -636,7 +636,6 @@ function run() {
                 timeoutSeconds: parseInt(core.getInput('timeoutSeconds') || '600'),
                 intervalSeconds: parseInt(core.getInput('intervalSeconds') || '10')
             });
-            core.setOutput('conclusion', result);
         }
         catch (error) {
             core.setFailed(error.message);
@@ -685,22 +684,23 @@ const poll = (options) => __awaiter(void 0, void 0, void 0, function* () {
             .filter(run => run.status !== 'completed')
             .filter(run => run.id !== currentRunId)
             .filter(run => run.created_at < (myRun === null || myRun === void 0 ? void 0 : myRun.created_at));
-        log(`Retrieved ${JSON.stringify(runsInProgress, null, 2)} check runs named ${workflowFile}`);
+        log(`Found: ${runsInProgress.length} runs in progress for ${workflowFile} for branch ${branch}`);
+        log(runsInProgress.map(r => `${r.id} => ${r.url}`).join('\n'));
         const stillRunning = !!runsInProgress.length;
         if (stillRunning) {
             runsInProgress.forEach(run => {
-                log(`Found an action which is still running, id: '${run.id}' conclusion: ${run.status}`);
+                log(`Found an action which is still running, id: '${run.id}' status: ${run.status}`);
             });
         }
         else {
             log('No actions found to be running');
-            return 'done';
+            return;
         }
         yield wait_1.wait(intervalSeconds * 1000);
         now = new Date().getTime();
     }
-    log(`No completed checks after ${timeoutSeconds} seconds, exiting with conclusion 'timed_out'`);
-    return 'timed_out';
+    log(`No completed checks after ${timeoutSeconds} seconds, exiting`);
+    throw new Error('Timed out');
 });
 exports.poll = poll;
 

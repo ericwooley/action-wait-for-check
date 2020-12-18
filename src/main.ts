@@ -10,10 +10,10 @@ async function run(): Promise<void> {
       client: getOctokit(token),
       log: msg => core.info(msg),
 
-      checkName: core.getInput('checkName', {required: true}),
+      workflowFile: core.getInput('workflowFile', {required: true}),
       owner: core.getInput('owner') || context.repo.owner,
       repo: core.getInput('repo') || context.repo.repo,
-      branch: core.getInput('branch'),
+      branch: core.getInput('branch', {required: true}),
 
       timeoutSeconds: parseInt(core.getInput('timeoutSeconds') || '600'),
       intervalSeconds: parseInt(core.getInput('intervalSeconds') || '10')

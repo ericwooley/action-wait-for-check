@@ -11,7 +11,7 @@ export interface Options {
   client: GithubClient
   log: (message: string) => void
 
-  checkName: string
+  workflowFile: string
   timeoutSeconds: number
   intervalSeconds: number
   owner: string
@@ -23,7 +23,7 @@ export const poll = async (options: Options): Promise<string> => {
   const {
     client,
     log,
-    checkName,
+    workflowFile,
     timeoutSeconds,
     intervalSeconds,
     owner,
@@ -36,19 +36,21 @@ export const poll = async (options: Options): Promise<string> => {
 
   while (now <= deadline) {
     log(
-      `Retrieving check runs named ${checkName} on ${owner}/${repo}@${branch}...`
+      `Retrieving check runs named ${worflowFile} on ${owner}/${repo}@${branch}...`
     )
     const result = await client.actions.listWorkflowRuns({
       owner,
       repo,
-      workflow_id: checkName,
+      workflow_id: workflowFile,
       branch
     })
     const runsInProgress = result.data.workflow_runs.filter(
       run => run.status !== 'completed'
     )
 
-    log(`Retrieved ${result.data.workflow_runs} check runs named ${checkName}`)
+    log(
+      `Retrieved ${result.data.workflow_runs} check runs named ${workflowFile}`
+    )
 
     const stillRunning = !!runsInProgress.length
     if (stillRunning) {

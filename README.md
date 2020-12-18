@@ -6,7 +6,7 @@ A GitHub Action that allows you to wait for another GitHub check to complete. Th
 
 ```yaml
     steps:
-      - name: Set Environment Name
+      - name: Set Branch Name
         id: vars
         run: echo ::set-output name=branch_name::${GITHUB_REF#refs/*/}
       # Wait for previous action to complete.

@@ -1,8 +1,4 @@
-<p align="center">
-  <a href="https://github.com/fountainhead/action-wait-for-check/actions"><img alt="action-wait-for-check status" src="https://github.com/fountainhead/action-wait-for-check/workflows/build-test/badge.svg"></a>
-</p>
-
-# GitHub Action: Wait for Check
+# GitHub Action: One action at a time
 
 A GitHub Action that allows you to wait for another GitHub check to complete. This is useful if you want to run one Workflow after another one finishes.
 
@@ -15,7 +11,7 @@ A GitHub Action that allows you to wait for another GitHub check to complete. Th
         run: echo ::set-output name=branch_name::${GITHUB_REF#refs/*/}
       # Wait for previous action to complete.
       - name: Wait for previous deploys to finish
-        uses: ericwooley/action-wait-for-check@master
+        uses: ericwooley/one-action-at-a-time@master
         id: wait-for-build
         with:
           token: ${{ secrets.GITHUB_TOKEN }}

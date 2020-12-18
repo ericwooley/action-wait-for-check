@@ -13,7 +13,7 @@ const run = () =>
     checkName: 'test',
     owner: 'testOrg',
     repo: 'testRepo',
-    ref: 'abcd',
+    branch: 'abcd',
     timeoutSeconds: 3,
     intervalSeconds: 0.1
   })

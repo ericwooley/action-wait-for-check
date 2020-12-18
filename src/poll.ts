@@ -1,8 +1,14 @@
-import {GitHub} from '@actions/github'
+import {getOctokit} from '@actions/github'
 import {wait} from './wait'
-
+export interface GithubClient {
+  actions: {
+    listWorkflowRuns: ReturnType<
+      typeof getOctokit
+    >['actions']['listWorkflowRuns']
+  }
+}
 export interface Options {
-  client: GitHub
+  client: GithubClient
   log: (message: string) => void
 
   checkName: string
@@ -10,7 +16,7 @@ export interface Options {
   intervalSeconds: number
   owner: string
   repo: string
-  ref: string
+  branch: string
 }
 
 export const poll = async (options: Options): Promise<string> => {
@@ -22,7 +28,7 @@ export const poll = async (options: Options): Promise<string> => {
     intervalSeconds,
     owner,
     repo,
-    ref
+    branch
   } = options
 
   let now = new Date().getTime()
@@ -30,33 +36,32 @@ export const poll = async (options: Options): Promise<string> => {
 
   while (now <= deadline) {
     log(
-      `Retrieving check runs named ${checkName} on ${owner}/${repo}@${ref}...`
+      `Retrieving check runs named ${checkName} on ${owner}/${repo}@${branch}...`
     )
-    const result = await client.checks.listForRef({
-      // eslint-disable-next-line @typescript-eslint/camelcase
-      check_name: checkName,
+    const result = await client.actions.listWorkflowRuns({
       owner,
       repo,
-      ref
+      workflow_id: checkName,
+      branch
     })
-
-    log(
-      `Retrieved ${result.data.check_runs.length} check runs named ${checkName}`
+    const runsInProgress = result.data.workflow_runs.filter(
+      run => run.status !== 'completed'
     )
 
-    const completedCheck = result.data.check_runs.find(
-      checkRun => checkRun.status === 'completed'
-    )
-    if (completedCheck) {
-      log(
-        `Found a completed check with id ${completedCheck.id} and conclusion ${completedCheck.conclusion}`
-      )
-      return completedCheck.conclusion
+    log(`Retrieved ${result.data.workflow_runs} check runs named ${checkName}`)
+
+    const stillRunning = !!runsInProgress.length
+    if (stillRunning) {
+      runsInProgress.forEach(run => {
+        log(
+          `Found an action which is still running, id: '${run.id}' conclusion: ${run.status}`
+        )
+      })
+    } else {
+      log('No actions found to be running')
+      return 'done'
     }
 
-    log(
-      `No completed checks named ${checkName}, waiting for ${intervalSeconds} seconds...`
-    )
     await wait(intervalSeconds * 1000)
 
     now = new Date().getTime()

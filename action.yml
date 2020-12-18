@@ -1,6 +1,6 @@
-name: "Wait For Check"
-description: "Wait for another GitHub check to complete"
-author: "Fountainhead Technologies Ltd."
+name: "One action at a time"
+description: "Wait for other GitHub actions to complete"
+author: "Eric Wooley"
 branding:
   icon: "check-circle"
   color: "green"

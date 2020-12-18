@@ -64,10 +64,3 @@ This Action accepts the following configuration parameters via `with:`
   **Default: `10`**
 
   The number of seconds to wait before each poll of the GitHub API for checks on this commit.
-
-## Outputs
-
-This Action emits a single output named `conclusion`. It may be one of the following values:
-
-- `ready`
-- `timed_out`

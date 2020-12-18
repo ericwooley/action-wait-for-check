@@ -53,7 +53,7 @@ export const poll = async (options: Options): Promise<string> => {
 
     log(
       `Retrieved ${JSON.stringify(
-        result.data.workflow_runs,
+        runsInProgress,
         null,
         2
       )} check runs named ${workflowFile}`

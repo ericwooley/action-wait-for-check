@@ -681,7 +681,7 @@ const poll = (options) => __awaiter(void 0, void 0, void 0, function* () {
         const runsInProgress = result.data.workflow_runs
             .filter(run => run.status !== 'completed')
             .filter(run => run.id !== currentRunId);
-        log(`Retrieved ${JSON.stringify(result.data.workflow_runs, null, 2)} check runs named ${workflowFile}`);
+        log(`Retrieved ${JSON.stringify(runsInProgress, null, 2)} check runs named ${workflowFile}`);
         const stillRunning = !!runsInProgress.length;
         if (stillRunning) {
             runsInProgress.forEach(run => {
